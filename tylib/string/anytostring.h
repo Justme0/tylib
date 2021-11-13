@@ -1,17 +1,3 @@
-// Tencent is pleased to support the open source community by making AnyToString available.
-//
-// Copyright (C) 2019 THL A29 Limited, a Tencent company, and Taylor Jiang. All rights reserved.
-//
-// Licensed under the MIT License (the "License"); you may not use this file except in compliance
-// with the License. You may obtain a copy of the License at
-//
-// http://opensource.org/licenses/MIT
-//
-// Unless required by applicable law or agreed to in writing, software distributed under the License
-// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-// or implied. See the License for the specific language governing permissions and limitations under
-// the License.
-
 #ifndef ANYTOSTRING_ANYTOSTRING_H_
 #define ANYTOSTRING_ANYTOSTRING_H_
 
@@ -34,19 +20,22 @@
 #include "google/protobuf/map.h"
 #endif
 
+#ifdef TENCENT_JCE
 #include "jce/Jce.h"
+#endif
 
-namespace anytostring {
+namespace tylib {
 
 inline const std::string& AnyToString(const std::string& s) { return s; }
 
-std::string AnyToString(const Json::Value& jValue) {
+inline std::string AnyToString(const Json::Value& jValue) {
   Json::FastWriter writer;
   return writer.write(jValue);
 }
 
 template <class J>
-typename std::enable_if<std::is_base_of<::rapidjson::Value, J>::value, std::string>::type
+typename std::enable_if<std::is_base_of<::rapidjson::Value, J>::value,
+                        std::string>::type
 AnyToStringHelper(const J* jValue) {
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -76,19 +65,23 @@ std::string AnyToString(const google::protobuf::MapPair<T1, T2>& p) {
 
 #if GOOGLE_PROTOBUF_VERSION >= 2000000
 template <class Pb>
-typename std::enable_if<std::is_base_of<::google::protobuf::Message, Pb>::value, std::string>::type
+typename std::enable_if<std::is_base_of<::google::protobuf::Message, Pb>::value,
+                        std::string>::type
 AnyToStringHelper(const Pb* pb) {
   return pb->Utf8DebugString();
 }
 #endif
 
+#ifdef TENCENT_JCE
 template <class Jce>
-typename std::enable_if<std::is_base_of<taf::JceStructBase, Jce>::value, std::string>::type
+typename std::enable_if<std::is_base_of<taf::JceStructBase, Jce>::value,
+                        std::string>::type
 AnyToStringHelper(const Jce* jce) {
   std::stringstream ss;
   jce->display(ss);
   return ss.str();
 }
+#endif
 
 template <typename T>
 class HasToString {
@@ -124,10 +117,12 @@ class HasBegin {
 };
 
 template <typename T>
-typename std::enable_if<HasToString<T>::value, std::string>::type AnyToStringHelper(const T* t) {
+typename std::enable_if<HasToString<T>::value, std::string>::type
+AnyToStringHelper(const T* t) {
   return t->ToString();
 }
 
+// print all element, maybe many :)
 template <typename It>
 std::string AnyToStringForRange(It begin, It end) {
   std::stringstream ss;
@@ -144,7 +139,8 @@ std::string AnyToStringForRange(It begin, It end) {
 }
 
 template <typename C>
-typename std::enable_if<HasBegin<C>::value, std::string>::type AnyToStringHelper(const C* c) {
+typename std::enable_if<HasBegin<C>::value, std::string>::type
+AnyToStringHelper(const C* c) {
   return AnyToStringForRange(c->begin(), c->end());
 }
 
@@ -165,6 +161,6 @@ std::string AnyToString(const T& t) {
   return AnyToStringHelper(&t);
 }
 
-}  // namespace anytostring
+}  // namespace tylib
 
 #endif  // ANYTOSTRING_ANYTOSTRING_H_
