@@ -5,6 +5,8 @@
 
 #include <arpa/inet.h>
 
+namespace tylib {
+
 using IPIntegerType = uint32_t;
 
 // 1, i386(主流)主机序(小端)整数IP转为字符串
@@ -32,11 +34,14 @@ inline std::string netOrderToString(IPIntegerType ipAddress)
 // 3, return 0 if s is invalid, don't return error :)
 inline IPIntegerType stringToNetOrder(const std::string& s)
 {
-  struct in_addr inaddr = 0;
+  struct in_addr inaddr;
 
-  inet_pton(AF_INET, s.data(), &inaddr);  // return 1 on success
+  int ret = inet_pton(AF_INET, s.data(), &inaddr);
+  if (1 != ret) {  // return 1 on success
+      return 0;
+  }
 
-  return inaddr;
+  return inaddr.s_addr;
 }
 
 // 4
@@ -58,4 +63,5 @@ inline void GetIpPort(sockaddr_in addr, std::string& ip, int& port) {
         ip = str;
     }
     port = ntohs(addr.sin_port);
+}
 }
