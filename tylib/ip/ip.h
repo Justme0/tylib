@@ -1,17 +1,18 @@
 // readable string, netorder, hostorder IPv4 convert (6 conversion)
-#pragma once
 
-#include <string>
+#ifndef TYLIB_IP_IP_H_
+#define TYLIB_IP_IP_H_
 
 #include <arpa/inet.h>
+
+#include <string>
 
 namespace tylib {
 
 using IPIntegerType = uint32_t;
 
 // 1, i386(主流)主机序(小端)整数IP转为字符串
-inline std::string hostOrderToString(IPIntegerType ipAddress)
-{
+inline std::string hostOrderToString(IPIntegerType ipAddress) {
   char s[INET_ADDRSTRLEN];
   snprintf(s, sizeof s, "%u.%u.%u.%u", (ipAddress & 0xff000000) >> 24,
            (ipAddress & 0x00ff0000) >> 16, (ipAddress & 0x0000ff00) >> 8,
@@ -21,8 +22,7 @@ inline std::string hostOrderToString(IPIntegerType ipAddress)
 }
 
 // 2, 网络序(大端)整数IP转为字符串
-inline std::string netOrderToString(IPIntegerType ipAddress)
-{
+inline std::string netOrderToString(IPIntegerType ipAddress) {
   char s[INET_ADDRSTRLEN];
   snprintf(s, sizeof s, "%u.%u.%u.%u", (ipAddress & 0x000000ff),
            (ipAddress & 0x0000ff00) >> 8, (ipAddress & 0x00ff0000) >> 16,
@@ -32,21 +32,19 @@ inline std::string netOrderToString(IPIntegerType ipAddress)
 }
 
 // 3, return 0 if s is invalid, don't return error :)
-inline IPIntegerType stringToNetOrder(const std::string& s)
-{
+inline IPIntegerType stringToNetOrder(const std::string& s) {
   struct in_addr inaddr;
 
   int ret = inet_pton(AF_INET, s.data(), &inaddr);
   if (1 != ret) {  // return 1 on success
-      return 0;
+    return 0;
   }
 
   return inaddr.s_addr;
 }
 
 // 4
-inline IPIntegerType stringToHostOrder(const std::string& s)
-{
+inline IPIntegerType stringToHostOrder(const std::string& s) {
   return ntohl(stringToNetOrder(s));
 }
 
@@ -54,14 +52,17 @@ inline IPIntegerType stringToHostOrder(const std::string& s)
 // 6, ntohl(3) convert net order to host
 
 inline void GetIpPort(sockaddr_in addr, std::string& ip, int& port) {
-    char str[INET_ADDRSTRLEN]; // only support IPv4
-    const char *s = inet_ntop(AF_INET, &(addr.sin_addr), str, INET_ADDRSTRLEN);
-    if (nullptr == s) {
-      tylog("inet_ntop return null, errno=%d[%s]", errno, strerror(errno));
-      ip = "";
-    } else {
-        ip = str;
-    }
-    port = ntohs(addr.sin_port);
+  char str[INET_ADDRSTRLEN];  // only support IPv4
+  const char* s = inet_ntop(AF_INET, &(addr.sin_addr), str, INET_ADDRSTRLEN);
+  if (nullptr == s) {
+    tylog("inet_ntop return null, errno=%d[%s]", errno, strerror(errno));
+    ip = "";
+  } else {
+    ip = str;
+  }
+  port = ntohs(addr.sin_port);
 }
-}
+
+}  // namespace tylib
+
+#endif  // TYLIB_IP_IP_H_

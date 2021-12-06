@@ -1,5 +1,5 @@
-#ifndef ANYTOSTRING_ANYTOSTRING_H_
-#define ANYTOSTRING_ANYTOSTRING_H_
+#ifndef TYLIB_STRING_ANY_TO_STRING_H_
+#define TYLIB_STRING_ANY_TO_STRING_H_
 
 #include <sstream>
 #include <string>
@@ -163,4 +163,4 @@ std::string AnyToString(const T& t) {
 
 }  // namespace tylib
 
-#endif  // ANYTOSTRING_ANYTOSTRING_H_
+#endif  // TYLIB_STRING_ANY_TO_STRING_H_
