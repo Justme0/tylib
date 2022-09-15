@@ -1,16 +1,24 @@
 #ifndef TYLIB_STRING_ANY_TO_STRING_H_
 #define TYLIB_STRING_ANY_TO_STRING_H_
 
+// #define JSONCPP
+// #define RAPIDJSON
+// #define TENCENT_JCE
+
 #include <sstream>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
 
+#ifdef RAPIDJSON
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#endif
 
+#ifdef JSONCPP
 #include "jsoncpp/json.h"
+#endif
 
 #if GOOGLE_PROTOBUF_VERSION >= 2000000
 #include "google/protobuf/message.h"
@@ -28,11 +36,14 @@ namespace tylib {
 
 inline const std::string& AnyToString(const std::string& s) { return s; }
 
+#ifdef JSONCPP
 inline std::string AnyToString(const Json::Value& jValue) {
   Json::FastWriter writer;
   return writer.write(jValue);
 }
+#endif
 
+#ifdef RAPIDJSON
 template <class J>
 typename std::enable_if<std::is_base_of<::rapidjson::Value, J>::value,
                         std::string>::type
@@ -42,6 +53,7 @@ AnyToStringHelper(const J* jValue) {
   jValue->Accept(writer);
   return buffer.GetString();
 }
+#endif
 
 template <class T>
 std::string AnyToString(const T& t);
