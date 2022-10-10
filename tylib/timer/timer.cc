@@ -109,15 +109,6 @@ void Time::AddDelay(uint64_t delay) {
   m_valid = false;
 }
 
-Time& Time::operator=(const Time& other) {
-  if (this != &other) {
-    m_ms = other.m_ms;
-    m_us = other.m_us;
-    m_valid = false;
-  }
-  return *this;
-}
-
 // interval 单位：毫秒
 Timer::Timer(uint32_t interval, int32_t count)
     : m_interval(interval), m_count(count) {
@@ -173,10 +164,10 @@ bool TimerManager::UpdateTimers(const Time& now) {
     }
   }
 
-  const bool hasUpdated(m_lastCheckTime <= now);
+  const bool hasUpdated(m_lastCheckTime.MilliSeconds() <= now.MilliSeconds());
 
-  while (m_lastCheckTime <= now) {
-    int index = m_lastCheckTime & (LIST1_SIZE - 1);
+  while (m_lastCheckTime.MilliSeconds() <= now.MilliSeconds()) {
+    int index = m_lastCheckTime.MilliSeconds() & (LIST1_SIZE - 1);
     if (index == 0 && !_Cacsade(m_list2, _Index(0)) &&
         !_Cacsade(m_list3, _Index(1)) && !_Cacsade(m_list4, _Index(2))) {
       _Cacsade(m_list5, _Index(3));
@@ -197,14 +188,14 @@ bool TimerManager::UpdateTimers(const Time& now) {
 void TimerManager::AddTimer(Timer* pTimer) {
   KillTimer(pTimer);
 
-  uint32_t diff =
-      static_cast<uint32_t>(pTimer->m_triggerTime - m_lastCheckTime);
+  uint64_t diff =
+      pTimer->m_triggerTime.MilliSeconds() - m_lastCheckTime.MilliSeconds();
   Timer* pListHead = nullptr;
   uint64_t trigTime = pTimer->m_triggerTime.MilliSeconds();
 
-  if ((int32_t)diff < 0) {
+  if (diff < 0) {
     pListHead = &m_list1[m_lastCheckTime.MilliSeconds() & (LIST1_SIZE - 1)];
-  } else if (diff < static_cast<uint32_t>(LIST1_SIZE)) {
+  } else if (diff < LIST1_SIZE) {
     pListHead = &m_list1[trigTime & (LIST1_SIZE - 1)];
   } else if (diff < 1 << (LIST1_BITS + LIST_BITS)) {
     pListHead = &m_list2[(trigTime >> LIST1_BITS) & (LIST_SIZE - 1)];

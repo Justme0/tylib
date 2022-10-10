@@ -51,9 +51,6 @@ class Time {
     return m_tm.tm_sec;
   }
 
-  Time& operator=(const Time&);
-  operator uint64_t() const { return m_ms; }
-
  private:
   uint64_t m_ms;  // milliseconds from 1970
   uint64_t m_us;
@@ -123,7 +120,7 @@ class TimerManager {
 };
 
 inline int TimerManager::_Index(int level) {
-  uint64_t current = m_lastCheckTime;
+  uint64_t current = m_lastCheckTime.MilliSeconds();
   current >>= (LIST1_BITS + level * LIST_BITS);
   return current & (LIST_SIZE - 1);
 }
