@@ -1,5 +1,5 @@
-#ifndef TYLIB_TIMER_TIMER_H_
-#define TYLIB_TIMER_TIMER_H_
+#ifndef TYLIB_TIME_TIMER_H_
+#define TYLIB_TIME_TIMER_H_
 
 #include <sys/time.h>
 
@@ -61,6 +61,7 @@ class Time {
 };
 
 extern Time g_now;
+#define g_now_ms g_now.MilliSeconds()
 
 class Timer {
   friend class TimerManager;
@@ -125,4 +126,4 @@ inline int TimerManager::_Index(int level) {
   return current & (LIST_SIZE - 1);
 }
 
-#endif  // TYLIB_TIMER_TIMER_H_
+#endif  // TYLIB_TIME_TIMER_H_
