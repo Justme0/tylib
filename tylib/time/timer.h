@@ -12,7 +12,7 @@
 class Time {
  public:
   Time();
-  Time(const Time& other);
+
   // OPT: year month day, and Effective cpp item 18
   Time(int hour, int min, int sec);
 
