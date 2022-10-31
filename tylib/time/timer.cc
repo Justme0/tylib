@@ -23,11 +23,6 @@ Time::Time() : m_ms(0), m_us(0), m_valid(false) {
   this->ComputeNow();
 }
 
-Time::Time(const Time& other) : m_ms(other.m_ms), m_us(other.m_us) {
-  m_tm.tm_year = 0;
-  m_valid = false;
-}
-
 Time::Time(int hour, int min, int sec) {
   this->ComputeNow();
 
