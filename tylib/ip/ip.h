@@ -5,6 +5,7 @@
 
 #include <arpa/inet.h>
 
+#include <cstring>
 #include <string>
 
 namespace tylib {
@@ -51,16 +52,28 @@ inline IPIntegerType stringToHostOrder(const std::string& s) {
 // 5, htonl(3) convert host order to net
 // 6, ntohl(3) convert net order to host
 
-inline void GetIpPort(sockaddr_in addr, std::string& ip, int& port) {
-  char str[INET_ADDRSTRLEN];  // only support IPv4
+// now only support IPv4
+inline void ParseIpPort(sockaddr_in addr, std::string& ip, int& port) {
+  char str[INET_ADDRSTRLEN];
   const char* s = inet_ntop(AF_INET, &(addr.sin_addr), str, INET_ADDRSTRLEN);
   if (nullptr == s) {
-    tylog("inet_ntop return null, errno=%d[%s]", errno, strerror(errno));
+    // not depend on other lib
+    // tylog("inet_ntop return null, errno=%d[%s]", errno, strerror(errno));
     ip = "";
   } else {
     ip = str;
   }
   port = ntohs(addr.sin_port);
+}
+
+// now only support IPv4
+inline sockaddr_in ConstructSockAddr(std::string& ip, int& port) {
+  sockaddr_in addr{};
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = stringToNetOrder(ip);
+  addr.sin_port = htons(port);
+
+  return addr;
 }
 
 }  // namespace tylib
