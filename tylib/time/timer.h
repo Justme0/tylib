@@ -17,8 +17,8 @@ class Time {
   Time(int hour, int min, int sec);
 
   void ComputeNow();
-  uint64_t MilliSeconds() const { return m_ms; }
-  uint64_t MicroSeconds() const { return m_us; }
+  int64_t MilliSeconds() const { return m_ms; }
+  int64_t MicroSeconds() const { return m_us; }
   const char* FormatTime(char* buf, int size) const;
   void AddDelay(uint64_t delay);
 
@@ -52,8 +52,8 @@ class Time {
   }
 
  private:
-  uint64_t m_ms;  // milliseconds from 1970
-  uint64_t m_us;
+  int64_t m_ms;  // milliseconds from 1970
+  int64_t m_us;
   mutable tm m_tm;
   mutable bool m_valid;
 
@@ -121,7 +121,7 @@ class TimerManager {
 };
 
 inline int TimerManager::_Index(int level) {
-  uint64_t current = m_lastCheckTime.MilliSeconds();
+  int64_t current = m_lastCheckTime.MilliSeconds();
   current >>= (LIST1_BITS + level * LIST_BITS);
   return current & (LIST_SIZE - 1);
 }

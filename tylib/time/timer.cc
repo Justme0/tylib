@@ -1,7 +1,6 @@
 #include "timer.h"
 
 #include <cassert>
-#include <cstdio>
 #include <cstdlib>
 
 static bool IsLeapYear(int year) {
@@ -79,8 +78,8 @@ void Time::_UpdateTm() const {
 void Time::ComputeNow() {
   struct timeval now;
   ::gettimeofday(&now, 0);
-  m_ms = (uint64_t)(now.tv_sec * 1000UL + now.tv_usec / 1000UL);
-  m_us = (uint64_t)(now.tv_sec * 1000000UL + now.tv_usec);
+  m_ms = (int64_t)(now.tv_sec * 1000UL + now.tv_usec / 1000UL);
+  m_us = (int64_t)(now.tv_sec * 1000000UL + now.tv_usec);
   m_valid = false;
 }
 
@@ -183,10 +182,10 @@ bool TimerManager::UpdateTimers(const Time& now) {
 void TimerManager::AddTimer(Timer* pTimer) {
   KillTimer(pTimer);
 
-  uint64_t diff =
+  int64_t diff =
       pTimer->m_triggerTime.MilliSeconds() - m_lastCheckTime.MilliSeconds();
   Timer* pListHead = nullptr;
-  uint64_t trigTime = pTimer->m_triggerTime.MilliSeconds();
+  int64_t trigTime = pTimer->m_triggerTime.MilliSeconds();
 
   if (diff < 0) {
     pListHead = &m_list1[m_lastCheckTime.MilliSeconds() & (LIST1_SIZE - 1)];
