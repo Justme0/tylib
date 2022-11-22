@@ -67,7 +67,7 @@ inline void ParseIpPort(sockaddr_in addr, std::string& ip, int& port) {
 }
 
 // now only support IPv4
-inline sockaddr_in ConstructSockAddr(std::string& ip, int& port) {
+inline sockaddr_in ConstructSockAddr(const std::string& ip, int port) {
   sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = stringToNetOrder(ip);

@@ -4,13 +4,13 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/unistd.h>
 #include <netinet/in.h>
 #include <sys/ipc.h>
 #include <sys/mman.h>
 #include <sys/sem.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -147,7 +147,10 @@ class CMLogger {
   unsigned format;
   std::string dir;
   std::string prefix;
-  unsigned long size;  // 4 bytes in 32-bit mode, 8 bytes in 64-bit mode
+
+  // 4 bytes in 32-bit mode, 8 bytes in 64-bit mode
+  unsigned long size;
+
  private:
   int lkfd;
   int semid;
@@ -186,6 +189,17 @@ inline std::string CMLogger::MakeName(long ts) {
   snprintf(tmp, sizeof(tmp), "%s/%s_%4d%02d%02d_%02d%02d%02d.log", dir.c_str(),
            prefix.c_str(), t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour,
            t.tm_min, t.tm_sec);
+
+  const char* softlinkTarget = tmp + dir.size() + 1;
+
+  char softlink[1024];
+  snprintf(softlink, sizeof(softlink), "%s/%s.log", dir.c_str(),
+           prefix.c_str());
+
+  // symlink cannot force create link
+  remove(softlink);
+  symlink(softlinkTarget, softlink);
+
   return tmp;
 }
 
@@ -334,17 +348,16 @@ inline int CMLogger::Log(const char* buf, int len) {
   if (unlikely(mm->bytes >= size))  // Double Checked Locking
   {
     sem_lock(semid);
-    if (mm->bytes >=
-        size)  // Maybe fd is old file, but check bytes is small (new file).
-    {
+    // Maybe fd is old file, but check bytes is small (new file).
+    if (mm->bytes >= size) {
       myts = time(NULL);
       int nfd = open(MakeName(myts).c_str(),
                      O_CREAT | O_RDWR | O_APPEND | O_LARGEFILE, 0666);
-      if (nfd < 0)
+      if (nfd < 0) {
         ;
-      else if (fd < 0)
+      } else if (fd < 0) {
         fd = nfd;
-      else {
+      } else {
         // Confirm nfd != fd
         dup2(nfd, fd);  // Other threads may write to new file, but bytes added
                         // to old file.

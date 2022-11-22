@@ -1,6 +1,9 @@
 #ifndef TYLIB_STRING_FORMAT_STRING_H_
 #define TYLIB_STRING_FORMAT_STRING_H_
 
+#include <cstdarg>
+#include <string>
+
 namespace tylib {
 // taylor to use c++20 std::format
 // https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
