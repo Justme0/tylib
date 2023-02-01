@@ -244,7 +244,7 @@ inline int CMLogger::Init(int _mylevel, unsigned _format, const char* _dir,
     if (sb.st_size && ftruncate(lkfd, 0) != 0)
       ret = -4;
     else {
-      mmap_struct md = {time(NULL), 0};
+      mmap_struct md = {time(nullptr), 0};
       if (write(lkfd, &md, sizeof(mmap_struct)) != sizeof(mmap_struct))
         ret = -5;
     }
@@ -350,7 +350,7 @@ inline int CMLogger::Log(const char* buf, int len) {
     sem_lock(semid);
     // Maybe fd is old file, but check bytes is small (new file).
     if (mm->bytes >= size) {
-      myts = time(NULL);
+      myts = time(nullptr);
       int nfd = open(MakeName(myts).c_str(),
                      O_CREAT | O_RDWR | O_APPEND | O_LARGEFILE, 0666);
       if (nfd < 0) {
