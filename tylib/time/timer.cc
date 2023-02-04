@@ -25,7 +25,7 @@ Time::Time() : m_ms(0), m_us(0), m_valid(false) {
 Time::Time(int hour, int min, int sec) {
   this->ComputeNow();
 
-  //如果hour小于当前的hour，则换天了，如果当前天数是本月最后一天，则换月；如果本月是12月，则换年
+  // 如果hour小于当前的hour，则换天了，如果当前天数是本月最后一天，则换月；如果本月是12月，则换年
   int day = GetDay();
   int mon = GetMonth();
   int year = GetYear();
@@ -172,7 +172,9 @@ bool TimerManager::UpdateTimers(const Time& now) {
     Timer* pTimer;
     while ((pTimer = m_list1[index].m_next) != nullptr) {
       KillTimer(pTimer);
-      if (pTimer->OnTimer()) AddTimer(pTimer);
+      if (pTimer->OnTimer()) {
+        AddTimer(pTimer);
+      };
     }
   }
 
@@ -228,13 +230,17 @@ void TimerManager::ScheduleAt(Timer* pTimer, const Time& triggerTime) {
   AddTimer(pTimer);
 }
 
+// if pTimer is never added, no effect
 void TimerManager::KillTimer(Timer* pTimer) {
   if (pTimer && pTimer->m_prev) {
     pTimer->m_prev->m_next = pTimer->m_next;
 
-    if (pTimer->m_next) pTimer->m_next->m_prev = pTimer->m_prev;
+    if (nullptr != pTimer->m_next) {
+      pTimer->m_next->m_prev = pTimer->m_prev;
+    }
 
-    pTimer->m_prev = pTimer->m_next = nullptr;
+    pTimer->m_prev = nullptr;
+    pTimer->m_next = nullptr;
   }
 }
 

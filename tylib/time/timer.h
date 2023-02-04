@@ -73,7 +73,9 @@ class Timer {
   void SetRemainCnt(int32_t remain) { m_count = remain; }
 
  private:
+  // if return false, never execute the timer task
   virtual bool _OnTimer() { return false; }
+
   Timer* m_next;
   Timer* m_prev;
   Time m_triggerTime;
