@@ -273,7 +273,7 @@ inline int CMLogger::Log(int level, const char* file, int line,
                          const char* func, const char* fmt, ...) {
   if (level > mylevel) return 0;
 
-  char buf[4096];
+  char buf[8 * 1024];
   int n = 0;
 
   if (format & MLOG_F_PNAME) {
