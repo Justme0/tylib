@@ -78,8 +78,8 @@ void Time::_UpdateTm() const {
 void Time::ComputeNow() {
   struct timeval now;
   ::gettimeofday(&now, 0);
-  m_ms = (int64_t)(now.tv_sec * 1000UL + now.tv_usec / 1000UL);
-  m_us = (int64_t)(now.tv_sec * 1000000UL + now.tv_usec);
+  m_ms = static_cast<int64_t>(now.tv_sec) * 1000UL + now.tv_usec / 1000UL;
+  m_us = static_cast<int64_t>(now.tv_sec) * 1000000UL + now.tv_usec;
   m_valid = false;
 }
 

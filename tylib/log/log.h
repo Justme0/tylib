@@ -176,9 +176,15 @@ inline CMLogger::CMLogger()
 inline CMLogger::~CMLogger() { Clean(); }
 
 inline void CMLogger::Clean() {
-  if (fd >= 0) close(fd);
-  if (lkfd >= 0) close(lkfd);
-  if (mm && mm != MAP_FAILED) munmap((void*)mm, sizeof(mmap_struct));
+  if (fd >= 0) {
+    close(fd);
+  }
+  if (lkfd >= 0) {
+    close(lkfd);
+  }
+  if (mm && mm != MAP_FAILED) {
+    munmap(const_cast<mmap_struct*>(mm), sizeof(mmap_struct));
+  }
 }
 
 inline std::string CMLogger::MakeName(long ts) {
@@ -256,8 +262,8 @@ inline int CMLogger::Init(int _mylevel, unsigned _format, const char* _dir,
     return ret;
   }
 
-  mm = (mmap_struct*)mmap(0, sizeof(mmap_struct), PROT_READ | PROT_WRITE,
-                          MAP_SHARED, lkfd, 0);
+  mm = static_cast<mmap_struct*>(mmap(
+      0, sizeof(mmap_struct), PROT_READ | PROT_WRITE, MAP_SHARED, lkfd, 0));
   if (mm == MAP_FAILED) {
     Clean();
     return -6;
@@ -299,11 +305,11 @@ inline int CMLogger::Log(int level, const char* file, int line,
   }
 
   if (format & MLOG_F_PID) {
-    n += snprintf(buf + n, sizeof(buf) - n, "%d ", (int)getpid());
+    n += snprintf(buf + n, sizeof(buf) - n, "%d ", getpid());
   }
 
   if (format & MLOG_F_TID) {
-    n += snprintf(buf + n, sizeof(buf) - n, "%d ", (int)gettid());
+    n += snprintf(buf + n, sizeof(buf) - n, "%d ", gettid());
   }
 
   if (format & MLOG_F_FILELINE) {
@@ -317,7 +323,9 @@ inline int CMLogger::Log(int level, const char* file, int line,
   va_list args;
   va_start(args, fmt);
   n += vsnprintf(buf + n, sizeof(buf) - n, fmt, args);
-  if (n >= (int)sizeof(buf)) n = sizeof(buf) - 1;
+  if (n >= static_cast<int>(sizeof(buf))) {
+    n = sizeof(buf) - 1;
+  }
   va_end(args);
 
   buf[n++] = '\n';
