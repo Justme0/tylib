@@ -5,29 +5,26 @@
 #include <string>
 
 namespace tylib {
-// taylor to use c++20 std::format
+
+// OPT: use c++20 std::format
 // https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
-static inline std::string format_string(const char* szFmt, ...)
+template <size_t N = 32 * 1024>
+std::string format_string(const char* fmt, ...)
     __attribute__((format(printf, 1, 2)));
-static inline std::string format_string(const char* szFmt, ...) {
+
+template <size_t N>
+inline std::string format_string(const char* fmt, ...) {
   int n = 0;
-
   va_list ap;
+  static thread_local char buffer[N];
 
-  // max string allowed
-  const int iLargeSize = 65536;
-  // use static, not thread safe
-  static char szLargeBuff[iLargeSize];
-
-  va_start(ap, szFmt);
-  n = vsnprintf(szLargeBuff, sizeof(szLargeBuff), szFmt, ap);
+  va_start(ap, fmt);
+  n = vsnprintf(buffer, sizeof(buffer), fmt, ap);
   va_end(ap);
-
-  if (n >= iLargeSize) {
-    n = iLargeSize - 1;
+  if (n >= static_cast<int>(sizeof(buffer))) {
+    n = sizeof(buffer) - 1;
   }
-
-  return std::string(szLargeBuff, n);
+  return std::string(buffer, n);
 }
 
 }  // namespace tylib

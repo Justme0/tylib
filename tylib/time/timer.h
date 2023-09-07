@@ -4,10 +4,20 @@
 #include <sys/time.h>
 
 #include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <ctime>
 #include <mutex>
 #include <vector>
+
+// extern Time g_now;
+// #define g_now_ms g_now.MilliSeconds()
+
+// https://stackoverflow.com/questions/19555121/how-to-get-current-timestamp-in-milliseconds-since-1970-just-the-way-java-gets
+#define g_now_ms                                           \
+  std::chrono::duration_cast<std::chrono::milliseconds>(   \
+      std::chrono::system_clock::now().time_since_epoch()) \
+      .count()
 
 class Time {
  public:
@@ -60,8 +70,7 @@ class Time {
   void _UpdateTm() const;
 };
 
-extern Time g_now;
-#define g_now_ms g_now.MilliSeconds()
+extern Time g_now;  // for compatibility
 
 class Timer {
   friend class TimerManager;

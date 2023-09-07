@@ -15,7 +15,7 @@ static int DaysOfMonth(int year, int month) {
   return monthDay[month];
 }
 
-Time g_now;
+Time g_now;  // for compatibility
 
 Time::Time() : m_ms(0), m_us(0), m_valid(false) {
   m_tm.tm_year = 0;
