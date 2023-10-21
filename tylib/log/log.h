@@ -33,6 +33,12 @@ namespace tylib {
 #define unlikely(x) __builtin_expect(!!(x), 0)
 #endif
 
+#if _WIN32
+#define STRIP_FILENAME(x) strrchr(x, '\\') ? strrchr(x, '\\') + 1 : x
+#else
+#define STRIP_FILENAME(x) strrchr(x, '/') ? strrchr(x, '/') + 1 : x
+#endif
+
 enum MLOG_FMT {
   MLOG_F_NONE = 0,
   MLOG_F_PNAME = 1,
@@ -398,10 +404,11 @@ inline int MLOG_INIT(mlog::CMLogger* logger, int level, unsigned format,
 #define __FILENAME__ \
   (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
-#define MLOG(logger, level, fmt, y...)                                  \
-  do {                                                                  \
-    if (level > logger->Level()) break;                                 \
-    logger->Log(level, __FILENAME__, __LINE__, __FUNCTION__, fmt, ##y); \
+#define MLOG(logger, level, fmt, y...)                                       \
+  do {                                                                       \
+    if (level > logger->Level()) break;                                      \
+    logger->Log(level, STRIP_FILENAME(__FILENAME__), __LINE__, __FUNCTION__, \
+                fmt, ##y);                                                   \
   } while (0)
 
 #define MLOG_ERROR(logger, fmt, y...) \
