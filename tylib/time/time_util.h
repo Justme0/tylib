@@ -7,13 +7,14 @@
 namespace tylib {
 
 // local timezone is of server, OPT: use UTC0 for internationalization
+// NOTE: strftime use static var
+
 inline std::string MilliSecondToLocalTimeString(int64_t ms) {
   char szTime[64];
-  struct tm stTime;
   time_t tTime = ms / 1000;
   int fraction = ms % 1000;
-  localtime_r(&tTime, &stTime);
-  strftime(szTime, sizeof(szTime), "%Y-%m-%d %H:%M:%S", &stTime);
+  tm* p = localtime(&tTime);
+  strftime(szTime, sizeof(szTime), "%Y-%m-%d %H:%M:%S", p);
 
   char fractionBuf[5];
   sprintf(fractionBuf, "%03d", fraction);
@@ -21,12 +22,24 @@ inline std::string MilliSecondToLocalTimeString(int64_t ms) {
   return std::string(szTime) + "." + fractionBuf;
 }
 
-// local timezone is of server, OPT: use UTC0
-inline std::string SecondToLocalTimeString(int64_t second) {
+inline std::string MicroSecondToLocalTimeString(int64_t microSecond) {
   char szTime[64];
-  struct tm stTime;
-  localtime_r(&second, &stTime);
-  strftime(szTime, sizeof(szTime), "%Y-%m-%d %H:%M:%S", &stTime);
+  time_t tTime = microSecond / 1000000;
+  int fraction = microSecond % 1000000;
+  tm* p = localtime(&tTime);
+  strftime(szTime, sizeof(szTime), "%Y-%m-%d %H:%M:%S", p);
+
+  char fractionBuf[8];
+  sprintf(fractionBuf, "%06d", fraction);
+
+  return std::string(szTime) + "." + fractionBuf;
+}
+
+inline std::string SecondToLocalTimeString(time_t second) {
+  char szTime[64];
+  tm* p = localtime(&second);
+  strftime(szTime, sizeof(szTime), "%Y-%m-%d %H:%M:%S", p);
+
   return szTime;
 }
 

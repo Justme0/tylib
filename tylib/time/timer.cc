@@ -71,7 +71,7 @@ void Time::_UpdateTm() const {
 
   m_valid = true;
   const time_t now(m_ms / 1000UL);
-  ::localtime_r(&now, &m_tm);
+  m_tm = *localtime(&now); // use static var
 }
 
 // 调系统调用，有一定开销
