@@ -3,14 +3,23 @@
 #ifndef TYLIB_IP_IP_H_
 #define TYLIB_IP_IP_H_
 
-#include <arpa/inet.h>
-
 #include <cstring>
 #include <string>
+
+#if _WIN32
+#include <winsock.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+#else
+#include <arpa/inet.h>
+#endif
 
 namespace tylib {
 
 using IPIntegerType = uint32_t;
+
+// constexpr const int INET_ADDRSTRLEN = 16; // for win
 
 // 1, i386(主流)主机序(小端)整数IP转为字符串
 inline std::string hostOrderToString(IPIntegerType ipAddress) {
@@ -34,14 +43,7 @@ inline std::string netOrderToString(IPIntegerType ipAddress) {
 
 // 3, return 0 if s is invalid, don't return error :)
 inline IPIntegerType stringToNetOrder(const std::string& s) {
-  struct in_addr inaddr;
-
-  int ret = inet_pton(AF_INET, s.data(), &inaddr);
-  if (1 != ret) {  // return 1 on success
-    return 0;
-  }
-
-  return inaddr.s_addr;
+  return inet_addr(s.data()); // WIN
 }
 
 // 4
