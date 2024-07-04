@@ -7,10 +7,10 @@
 #include <string>
 
 #if _WIN32
+#include <windows.h>
 #include <winsock.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <windows.h>
 #else
 #include <arpa/inet.h>
 #endif
@@ -43,7 +43,7 @@ inline std::string netOrderToString(IPIntegerType ipAddress) {
 
 // 3, return 0 if s is invalid, don't return error :)
 inline IPIntegerType stringToNetOrder(const std::string& s) {
-  return inet_addr(s.data()); // WIN
+  return inet_addr(s.data());  // WIN
 }
 
 // 4
