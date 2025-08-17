@@ -2,10 +2,9 @@
 
 #include <list>
 
-#include "gtest/gtest.h"
-
 #include "example.pb.h"
 #include "example_jce.h"
+#include "gtest/gtest.h"
 
 namespace {
 

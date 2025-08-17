@@ -3,7 +3,6 @@
 #define TYLIB_TIME_TIME_UTIL_H_
 
 #include <ctime>
-
 #include <string>
 
 namespace tylib {

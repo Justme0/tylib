@@ -1,6 +1,7 @@
 #include "timer.h"
 
 #include <cassert>
+#include <cstdio>
 #include <cstdlib>
 
 static bool IsLeapYear(int year) {

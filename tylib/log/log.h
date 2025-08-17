@@ -101,9 +101,9 @@ inline int sem_init_count(key_t semkey, int count) {
   int semid;
 
   if ((semid = semget(semkey, 0, 0)) == -1) {
-    if ((semid = semget(semkey, 1, IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR |
-                                       S_IRGRP | S_IWGRP | S_IROTH |
-                                       S_IWOTH)) != -1) {
+    if ((semid = semget(semkey, 1,
+                        IPC_CREAT | IPC_EXCL | S_IRUSR | S_IWUSR | S_IRGRP |
+                            S_IWGRP | S_IROTH | S_IWOTH)) != -1) {
       struct sembuf sbuf;
       sbuf.sem_num = 0;
       sbuf.sem_op = count;
