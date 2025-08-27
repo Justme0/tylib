@@ -2,9 +2,15 @@
 
 #include <list>
 
-#include "example.pb.h"
-#include "example_jce.h"
 #include "gtest/gtest.h"
+
+#if GOOGLE_PROTOBUF_VERSION >= 2000000
+#include "example.pb.h"
+#endif
+
+#ifdef TENCENT_JCE
+#include "example_jce.h"
+#endif
 
 namespace {
 
@@ -39,12 +45,14 @@ TEST(AnyToString, BuiltInVarType) {
   EXPECT_EQ(tylib::AnyToString(obj), "[{1, [A, BC]}]");
 }
 
+#ifdef TENCENT_JCE
 TEST(AnyToString, JCE) {
   JceModule::User obj;
   obj.uid = "Mike";
   obj.age = 10;
   EXPECT_EQ(tylib::AnyToString(obj), "uid: Mike\nage: 10\n");
 }
+#endif
 
 #if GOOGLE_PROTOBUF_VERSION >= 2000000
 TEST(AnyToString, Protobuf) {
@@ -64,11 +72,13 @@ TEST(AnyToString, UserDefinedContainer) {
 }
 #endif
 
+#ifdef JSONCPP
 TEST(AnyToString, JsonCPP) {
   Json::Value obj;
   obj["data"]["value"] = 20;
   EXPECT_EQ(tylib::AnyToString(obj), "{\"data\":{\"value\":20}}\n");
 }
+#endif
 
 TEST(AnyToString, RapidJSON) {
   rapidjson::Document obj;
@@ -84,12 +94,6 @@ TEST(AnyToString, RawArray) {
   std::map<int32_t, std::array<int, 2>> array[2] = {{{1, {0, 4}}},
                                                     {{2, {9, 5}}}};
   EXPECT_EQ(tylib::AnyToString(array), "[[{1, [0, 4]}], [{2, [9, 5]}]]");
-}
-
-GTEST_API_ int main(int argc, char** argv) {
-  printf("Running main() from %s\n", __FILE__);
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }
 
 }  // namespace

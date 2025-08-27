@@ -6,3 +6,22 @@ cc_library(
     srcs = glob(["tylib/time/timer.cc"]),
     copts = ["-Werror", "-Wall", "-Wextra"],
 )
+
+cc_test(
+  name = "tylib_test",
+  size = "small",
+  srcs = glob([
+    "tylib/**/*_test.cc",
+    "tylib/**/*.h"
+  ]),
+
+  copts = ["-I tylib", "-Werror", "-Wall", "-Wextra"],
+
+  deps = [
+    "@rapidjson//:rapidjson",
+    "@jsoncpp//:jsoncpp",
+    "@googletest//:gtest",
+    "@googletest//:gtest_main",
+    "//:tylib",
+  ],
+)

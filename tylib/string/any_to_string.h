@@ -1,14 +1,14 @@
 #ifndef TYLIB_STRING_ANY_TO_STRING_H_
 #define TYLIB_STRING_ANY_TO_STRING_H_
 
-// #define JSONCPP
-// #define RAPIDJSON
-// #define TENCENT_JCE
-
 #include <sstream>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
+
+#define JSONCPP
+#define RAPIDJSON
+// #define TENCENT_JCE
 
 #ifdef RAPIDJSON
 #include "rapidjson/document.h"
@@ -17,7 +17,7 @@
 #endif
 
 #ifdef JSONCPP
-#include "jsoncpp/json.h"
+#include "json/json.h"
 #endif
 
 #if GOOGLE_PROTOBUF_VERSION >= 2000000
