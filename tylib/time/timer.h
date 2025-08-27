@@ -14,6 +14,7 @@
 // #define g_now_ms g_now.MilliSeconds()
 
 // https://stackoverflow.com/questions/19555121/how-to-get-current-timestamp-in-milliseconds-since-1970-just-the-way-java-gets
+// Maybe you want store nowMs in one loop process to avoid call each time.
 #define g_now_ms                                           \
   std::chrono::duration_cast<std::chrono::milliseconds>(   \
       std::chrono::system_clock::now().time_since_epoch()) \
