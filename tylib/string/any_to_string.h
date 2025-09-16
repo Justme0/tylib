@@ -6,10 +6,6 @@
 #include <type_traits>
 #include <typeinfo>
 
-#define JSONCPP
-#define RAPIDJSON
-// #define TENCENT_JCE
-
 #ifdef RAPIDJSON
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"

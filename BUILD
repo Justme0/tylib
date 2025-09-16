@@ -17,6 +17,11 @@ cc_test(
 
   copts = ["-I tylib", "-Werror", "-Wall", "-Wextra"],
 
+  defines = [
+    "JSONCPP",
+    "RAPIDJSON",
+  ],
+
   deps = [
     "@rapidjson//:rapidjson",
     "@jsoncpp//:jsoncpp",
