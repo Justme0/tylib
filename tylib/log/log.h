@@ -141,7 +141,7 @@ class CMLogger {
   struct mmap_struct {
     long ts;              // 4 bytes in 32-bit mode, 8 bytes in 64-bit mode
     unsigned long bytes;  // 4 bytes in 32-bit mode, 8 bytes in 64-bit mode
-  };                      // 8 bytes in 32-bit mode, 16 bytes in 64-bit mode
+  };  // 8 bytes in 32-bit mode, 16 bytes in 64-bit mode
 
   std::string MakeName(long ts);
 
@@ -387,8 +387,7 @@ inline int CMLogger::Log(const char* buf, int len) {
   }
 
   int n;
-  while ((n = write(fd, buf, len)) < 0 && errno == EINTR)
-    ;
+  while ((n = write(fd, buf, len)) < 0 && errno == EINTR);
   if (n > 0) (void)__sync_add_and_fetch(&mm->bytes, n);
 
   return n;
